@@ -1,0 +1,268 @@
+"use strict";
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+const TEAM_MEMBERS_KEY = 'teamMembersList'; // For localStorage
+const DEFAULT_TEAM_MEMBERS = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']; // Original list as a fallback
+let teamMembers = []; // This will hold the current list (loaded or default)
+const LOCAL_STORAGE_KEY = 'teamAssignments';
+let assignments = [];
+const DOMElements = {
+    form: document.getElementById('new-assignment-form'),
+    titleInput: document.getElementById('assignment-title'),
+    assigneeSelect: document.getElementById('assignment-assignee'),
+    typeSelect: document.getElementById('assignment-type'),
+    dueDateInput: document.getElementById('assignment-due-date'),
+    listContainer: document.getElementById('assignment-list'),
+    filterStatusSelect: document.getElementById('filter-status'),
+    sortBySelect: document.getElementById('sort-by'),
+    emptyStateMessage: document.querySelector('#assignment-list .empty-state'),
+    newAssigneeNameInput: document.getElementById('new-assignee-name'),
+    addAssigneeButton: document.getElementById('add-assignee-button'),
+};
+function saveAssignments() {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(assignments));
+}
+function saveTeamMembers() {
+    localStorage.setItem(TEAM_MEMBERS_KEY, JSON.stringify(teamMembers));
+}
+function loadTeamMembers() {
+    const storedMembers = localStorage.getItem(TEAM_MEMBERS_KEY);
+    if (storedMembers) {
+        teamMembers = JSON.parse(storedMembers);
+    }
+    else {
+        teamMembers = [...DEFAULT_TEAM_MEMBERS]; // Use a copy of the default
+    }
+    if (!teamMembers || teamMembers.length === 0) {
+        teamMembers = [...DEFAULT_TEAM_MEMBERS];
+    }
+}
+function loadAssignments() {
+    const storedAssignments = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (storedAssignments) {
+        assignments = JSON.parse(storedAssignments);
+    }
+}
+function getDisplayStatus(assignment) {
+    if (assignment.status !== 'Completed' && new Date(assignment.dueDate) < new Date(new Date().setHours(0, 0, 0, 0))) {
+        return 'Overdue';
+    }
+    return assignment.status;
+}
+function populateAssigneeDropdown() {
+    if (!DOMElements.assigneeSelect)
+        return;
+    DOMElements.assigneeSelect.innerHTML = ''; // Clear existing options
+    teamMembers.forEach(member => {
+        const option = document.createElement('option');
+        option.value = member;
+        option.textContent = member;
+        DOMElements.assigneeSelect.appendChild(option);
+    });
+}
+function renderAssignments() {
+    if (!DOMElements.listContainer)
+        return;
+    DOMElements.listContainer.innerHTML = ''; // Clear existing list
+    const filterStatus = DOMElements.filterStatusSelect.value;
+    const sortBy = DOMElements.sortBySelect.value;
+    let filteredAssignments = assignments.filter(assignment => {
+        if (filterStatus === 'all')
+            return true;
+        if (filterStatus === 'Overdue')
+            return getDisplayStatus(assignment) === 'Overdue';
+        return assignment.status === filterStatus;
+    });
+    filteredAssignments.sort((a, b) => {
+        switch (sortBy) {
+            case 'dueDate':
+                return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+            case 'dueDateDesc':
+                return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+            case 'title':
+                return a.title.localeCompare(b.title);
+            case 'assignee':
+                return a.assignee.localeCompare(b.assignee);
+            default:
+                return 0;
+        }
+    });
+    if (filteredAssignments.length === 0) {
+        const p = document.createElement('p');
+        p.className = 'empty-state';
+        p.textContent = 'No assignments match your filters. Try adjusting them or add a new assignment!';
+        DOMElements.listContainer.appendChild(p);
+        return;
+    }
+    filteredAssignments.forEach(assignment => {
+        const card = document.createElement('div');
+        card.className = 'assignment-card';
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('aria-labelledby', `assignment-title-${assignment.id}`);
+        const displayStatus = getDisplayStatus(assignment);
+        const statusClass = displayStatus.toLowerCase().replace(' ', '-');
+        card.innerHTML = `
+      <h3 id="assignment-title-${assignment.id}">${escapeHtml(assignment.title)}</h3>
+      <p><strong>Assignee:</strong> ${escapeHtml(assignment.assignee)}</p>
+      <p><strong>Type:</strong> ${escapeHtml(assignment.type)}</p>
+      <p class="due-date"><strong>Due:</strong> ${escapeHtml(assignment.dueDate)}</p>
+      <p><strong>Status:</strong> <span class="status-badge status-${statusClass}">${escapeHtml(displayStatus)}</span></p>
+      <div class="assignment-actions">
+        ${assignment.status !== 'Completed' ? `
+          ${assignment.status === 'Pending' ? `<button class="button small" data-id="${assignment.id}" data-action="start" aria-label="Mark ${escapeHtml(assignment.title)} as In Progress">Start</button>` : ''}
+          ${assignment.status === 'In Progress' ? `<button class="button small" data-id="${assignment.id}" data-action="complete" aria-label="Mark ${escapeHtml(assignment.title)} as Completed">Complete</button>` : ''}
+          ${assignment.status === 'In Progress' ? `<button class="button small secondary" data-id="${assignment.id}" data-action="pend" aria-label="Mark ${escapeHtml(assignment.title)} as Pending">Set to Pending</button>` : ''}
+        ` : `<button class="button small secondary" data-id="${assignment.id}" data-action="reopen" aria-label="Reopen ${escapeHtml(assignment.title)}">Reopen</button>`}
+        <button class="button small danger" data-id="${assignment.id}" data-action="delete" aria-label="Delete ${escapeHtml(assignment.title)}">Delete</button>
+      </div>
+    `;
+        card.querySelectorAll('.assignment-actions button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const target = e.target;
+                const id = target.dataset.id;
+                const action = target.dataset.action;
+                if (id && action) {
+                    handleAssignmentAction(id, action);
+                }
+            });
+        });
+        DOMElements.listContainer.appendChild(card);
+    });
+}
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+function handleAssignmentAction(id, action) {
+    const assignmentIndex = assignments.findIndex(a => a.id === id);
+    if (assignmentIndex === -1)
+        return;
+    switch (action) {
+        case 'start':
+            assignments[assignmentIndex].status = 'In Progress';
+            break;
+        case 'complete':
+            assignments[assignmentIndex].status = 'Completed';
+            break;
+        case 'pend':
+            assignments[assignmentIndex].status = 'Pending';
+            break;
+        case 'reopen':
+            assignments[assignmentIndex].status = 'Pending';
+            break;
+        case 'delete':
+            if (confirm('Are you sure you want to delete this assignment?')) {
+                assignments.splice(assignmentIndex, 1);
+            }
+            break;
+    }
+    saveAssignments();
+    renderAssignments();
+}
+function handleAddAssignee() {
+    console.log("Add Assignee button clicked!");
+    const newNameInput = DOMElements.newAssigneeNameInput;
+    const newName = newNameInput.value.trim();
+    console.log("New name entered:", newName);
+    if (!newName) {
+        console.log("Name is empty, showing alert.");
+        alert('Please enter a name for the new assignee.');
+        newNameInput.focus();
+        return;
+    }
+    if (teamMembers.some(member => member.toLowerCase() === newName.toLowerCase())) {
+        console.log("Name already exists, showing alert.");
+        alert(`"${newName}" is already in the team list.`);
+        newNameInput.value = '';
+        newNameInput.focus();
+        return;
+    }
+    teamMembers.push(newName);
+    console.log("Updated teamMembers:", teamMembers);
+    saveTeamMembers();
+    populateAssigneeDropdown();
+    console.log("Dropdown populated, showing alert.");
+    alert(`"${newName}" has been added successfully!`);
+    newNameInput.value = '';
+    newNameInput.focus();
+}
+function handleFormSubmit(event) {
+    event.preventDefault();
+    if (!DOMElements.form.checkValidity()) {
+        DOMElements.form.reportValidity();
+        return;
+    }
+    const newAssignment = {
+        id: `asg-${Date.now().toString()}-${Math.random().toString(36).substring(2, 7)}`, // Basic unique ID
+        title: DOMElements.titleInput.value.trim(),
+        assignee: DOMElements.assigneeSelect.value,
+        type: DOMElements.typeSelect.value,
+        dueDate: DOMElements.dueDateInput.value,
+        status: 'Pending',
+    };
+    assignments.push(newAssignment);
+    saveAssignments();
+    renderAssignments();
+    DOMElements.form.reset();
+    DOMElements.titleInput.focus();
+}
+function initializeApp() {
+    if (!DOMElements.form || !DOMElements.listContainer || !DOMElements.filterStatusSelect ||
+        !DOMElements.sortBySelect || !DOMElements.newAssigneeNameInput || !DOMElements.addAssigneeButton) {
+        console.error('One or more critical DOM elements are missing. App cannot initialize.');
+        return;
+    }
+    console.log("Initializing App...");
+    loadTeamMembers();
+    populateAssigneeDropdown();
+    loadAssignments();
+    renderAssignments();
+    DOMElements.form.addEventListener('submit', handleFormSubmit);
+    DOMElements.filterStatusSelect.addEventListener('change', renderAssignments);
+    DOMElements.sortBySelect.addEventListener('change', renderAssignments);
+    if (DOMElements.addAssigneeButton) {
+        console.log("Add Assignee Button Found! Adding listener.");
+        DOMElements.addAssigneeButton.addEventListener('click', handleAddAssignee);
+    }
+    else {
+        console.error("Add Assignee Button NOT FOUND!");
+    }
+    // --- Theme toggle code ---
+    const themeToggle = document.createElement('button');
+    themeToggle.textContent = 'Toggle Dark Mode';
+    themeToggle.className = 'button';
+    themeToggle.style.position = 'fixed';
+    themeToggle.style.top = '10px';
+    themeToggle.style.right = '10px';
+    themeToggle.setAttribute('aria-label', 'Toggle color theme');
+    document.body.appendChild(themeToggle);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    themeToggle.addEventListener('click', () => {
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+        }
+        else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+    // --- End of theme toggle code ---
+    // --- Due date code ---
+    const today = new Date().toISOString().split('T')[0];
+    DOMElements.dueDateInput.value = today;
+    DOMElements.dueDateInput.min = today;
+    // --- End of due date code ---
+}
+// Start the application
+document.addEventListener('DOMContentLoaded', initializeApp);
