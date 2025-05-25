@@ -4,9 +4,9 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const TEAM_MEMBERS_KEY = 'teamMembersList'; // For localStorage
-const DEFAULT_TEAM_MEMBERS = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']; // Original list as a fallback
-let teamMembers = []; // This will hold the current list (loaded or default)
+const TEAM_MEMBERS_KEY = 'teamMembersList';
+const DEFAULT_TEAM_MEMBERS = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+let teamMembers = [];
 const LOCAL_STORAGE_KEY = 'teamAssignments';
 let assignments = [];
 const DOMElements = {
@@ -34,7 +34,7 @@ function loadTeamMembers() {
         teamMembers = JSON.parse(storedMembers);
     }
     else {
-        teamMembers = [...DEFAULT_TEAM_MEMBERS]; // Use a copy of the default
+        teamMembers = [...DEFAULT_TEAM_MEMBERS];
     }
     if (!teamMembers || teamMembers.length === 0) {
         teamMembers = [...DEFAULT_TEAM_MEMBERS];
@@ -55,7 +55,7 @@ function getDisplayStatus(assignment) {
 function populateAssigneeDropdown() {
     if (!DOMElements.assigneeSelect)
         return;
-    DOMElements.assigneeSelect.innerHTML = ''; // Clear existing options
+    DOMElements.assigneeSelect.innerHTML = '';
     teamMembers.forEach(member => {
         const option = document.createElement('option');
         option.value = member;
@@ -66,7 +66,7 @@ function populateAssigneeDropdown() {
 function renderAssignments() {
     if (!DOMElements.listContainer)
         return;
-    DOMElements.listContainer.innerHTML = ''; // Clear existing list
+    DOMElements.listContainer.innerHTML = '';
     const filterStatus = DOMElements.filterStatusSelect.value;
     const sortBy = DOMElements.sortBySelect.value;
     let filteredAssignments = assignments.filter(assignment => {
@@ -78,16 +78,11 @@ function renderAssignments() {
     });
     filteredAssignments.sort((a, b) => {
         switch (sortBy) {
-            case 'dueDate':
-                return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-            case 'dueDateDesc':
-                return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
-            case 'title':
-                return a.title.localeCompare(b.title);
-            case 'assignee':
-                return a.assignee.localeCompare(b.assignee);
-            default:
-                return 0;
+            case 'dueDate': return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+            case 'dueDateDesc': return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+            case 'title': return a.title.localeCompare(b.title);
+            case 'assignee': return a.assignee.localeCompare(b.assignee);
+            default: return 0;
         }
     });
     if (filteredAssignments.length === 0) {
@@ -106,7 +101,7 @@ function renderAssignments() {
         const statusClass = displayStatus.toLowerCase().replace(' ', '-');
         card.innerHTML = `
       <h3 id="assignment-title-${assignment.id}">${escapeHtml(assignment.title)}</h3>
-      <p><strong>Assignee:</strong> ${escapeHtml(assignment.assignee)}</p>
+      <p><strong>Team Member:</strong> ${escapeHtml(assignment.assignee)}</p>
       <p><strong>Type:</strong> ${escapeHtml(assignment.type)}</p>
       <p class="due-date"><strong>Due:</strong> ${escapeHtml(assignment.dueDate)}</p>
       <p><strong>Status:</strong> <span class="status-badge status-${statusClass}">${escapeHtml(displayStatus)}</span></p>
@@ -133,12 +128,7 @@ function renderAssignments() {
     });
 }
 function escapeHtml(unsafe) {
-    return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 function handleAssignmentAction(id, action) {
     const assignmentIndex = assignments.findIndex(a => a.id === id);
@@ -167,18 +157,20 @@ function handleAssignmentAction(id, action) {
     renderAssignments();
 }
 function handleAddAssignee() {
-    console.log("Add Assignee button clicked!");
+    console.log("Add Team Member button clicked!"); // <<< CHANGED TEXT
     const newNameInput = DOMElements.newAssigneeNameInput;
     const newName = newNameInput.value.trim();
-    console.log("New name entered:", newName);
+    console.log("New member name entered:", newName); // <<< CHANGED TEXT
     if (!newName) {
         console.log("Name is empty, showing alert.");
-        alert('Please enter a name for the new assignee.');
+        // **** CHANGED TEXT ****
+        alert('Please enter a name for the new team member.');
         newNameInput.focus();
         return;
     }
     if (teamMembers.some(member => member.toLowerCase() === newName.toLowerCase())) {
         console.log("Name already exists, showing alert.");
+        // **** CHANGED TEXT ****
         alert(`"${newName}" is already in the team list.`);
         newNameInput.value = '';
         newNameInput.focus();
@@ -189,6 +181,7 @@ function handleAddAssignee() {
     saveTeamMembers();
     populateAssigneeDropdown();
     console.log("Dropdown populated, showing alert.");
+    // **** CHANGED TEXT ****
     alert(`"${newName}" has been added successfully!`);
     newNameInput.value = '';
     newNameInput.focus();
@@ -200,7 +193,7 @@ function handleFormSubmit(event) {
         return;
     }
     const newAssignment = {
-        id: `asg-${Date.now().toString()}-${Math.random().toString(36).substring(2, 7)}`, // Basic unique ID
+        id: `asg-${Date.now().toString()}-${Math.random().toString(36).substring(2, 7)}`,
         title: DOMElements.titleInput.value.trim(),
         assignee: DOMElements.assigneeSelect.value,
         type: DOMElements.typeSelect.value,
@@ -234,7 +227,6 @@ function initializeApp() {
     else {
         console.error("Add Assignee Button NOT FOUND!");
     }
-    // --- Theme toggle code ---
     const themeToggle = document.createElement('button');
     themeToggle.textContent = 'Toggle Dark Mode';
     themeToggle.className = 'button';
@@ -257,12 +249,9 @@ function initializeApp() {
             localStorage.setItem('theme', 'dark');
         }
     });
-    // --- End of theme toggle code ---
-    // --- Due date code ---
     const today = new Date().toISOString().split('T')[0];
     DOMElements.dueDateInput.value = today;
     DOMElements.dueDateInput.min = today;
-    // --- End of due date code ---
 }
 // Start the application
 document.addEventListener('DOMContentLoaded', initializeApp);

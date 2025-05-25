@@ -10,15 +10,15 @@ type DisplayStatus = AssignmentStatus | 'Overdue';
 interface Assignment {
   id: string;
   title: string;
-  assignee: string;
+  assignee: string; // Keep internal name 'assignee' for simplicity
   type: 'MDL' | 'SOP Review' | 'Internal Audit' | 'DOC';
-  dueDate: string; // YYYY-MM-DD
+  dueDate: string; 
   status: AssignmentStatus;
 }
 
-const TEAM_MEMBERS_KEY = 'teamMembersList'; // For localStorage
-const DEFAULT_TEAM_MEMBERS = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']; // Original list as a fallback
-let teamMembers: string[] = []; // This will hold the current list (loaded or default)
+const TEAM_MEMBERS_KEY = 'teamMembersList';
+const DEFAULT_TEAM_MEMBERS = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+let teamMembers: string[] = [];
 
 const LOCAL_STORAGE_KEY = 'teamAssignments';
 let assignments: Assignment[] = [];
@@ -50,7 +50,7 @@ function loadTeamMembers(): void {
   if (storedMembers) {
     teamMembers = JSON.parse(storedMembers);
   } else {
-    teamMembers = [...DEFAULT_TEAM_MEMBERS]; // Use a copy of the default
+    teamMembers = [...DEFAULT_TEAM_MEMBERS];
   }
   if (!teamMembers || teamMembers.length === 0) {
       teamMembers = [...DEFAULT_TEAM_MEMBERS];
@@ -73,9 +73,7 @@ function getDisplayStatus(assignment: Assignment): DisplayStatus {
 
 function populateAssigneeDropdown(): void {
     if (!DOMElements.assigneeSelect) return;
-    
-    DOMElements.assigneeSelect.innerHTML = ''; // Clear existing options
-
+    DOMElements.assigneeSelect.innerHTML = ''; 
     teamMembers.forEach(member => {
       const option = document.createElement('option');
       option.value = member;
@@ -86,33 +84,23 @@ function populateAssigneeDropdown(): void {
 
 function renderAssignments(): void {
   if (!DOMElements.listContainer) return;
-
-  DOMElements.listContainer.innerHTML = ''; // Clear existing list
-
+  DOMElements.listContainer.innerHTML = ''; 
   const filterStatus = DOMElements.filterStatusSelect.value;
   const sortBy = DOMElements.sortBySelect.value;
-
   let filteredAssignments = assignments.filter(assignment => {
     if (filterStatus === 'all') return true;
     if (filterStatus === 'Overdue') return getDisplayStatus(assignment) === 'Overdue';
     return assignment.status === filterStatus;
   });
-
   filteredAssignments.sort((a, b) => {
     switch (sortBy) {
-      case 'dueDate':
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-      case 'dueDateDesc':
-        return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
-      case 'title':
-        return a.title.localeCompare(b.title);
-      case 'assignee':
-        return a.assignee.localeCompare(b.assignee);
-      default:
-        return 0;
+      case 'dueDate': return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      case 'dueDateDesc': return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+      case 'title': return a.title.localeCompare(b.title);
+      case 'assignee': return a.assignee.localeCompare(b.assignee);
+      default: return 0;
     }
   });
-
   if (filteredAssignments.length === 0) {
     const p = document.createElement('p');
     p.className = 'empty-state';
@@ -120,19 +108,16 @@ function renderAssignments(): void {
     DOMElements.listContainer.appendChild(p);
     return;
   }
-
   filteredAssignments.forEach(assignment => {
     const card = document.createElement('div');
     card.className = 'assignment-card';
     card.setAttribute('role', 'listitem');
     card.setAttribute('aria-labelledby', `assignment-title-${assignment.id}`);
-
     const displayStatus = getDisplayStatus(assignment);
     const statusClass = displayStatus.toLowerCase().replace(' ', '-');
-
     card.innerHTML = `
       <h3 id="assignment-title-${assignment.id}">${escapeHtml(assignment.title)}</h3>
-      <p><strong>Assignee:</strong> ${escapeHtml(assignment.assignee)}</p>
+      <p><strong>Team Member:</strong> ${escapeHtml(assignment.assignee)}</p>
       <p><strong>Type:</strong> ${escapeHtml(assignment.type)}</p>
       <p class="due-date"><strong>Due:</strong> ${escapeHtml(assignment.dueDate)}</p>
       <p><strong>Status:</strong> <span class="status-badge status-${statusClass}">${escapeHtml(displayStatus)}</span></p>
@@ -145,7 +130,6 @@ function renderAssignments(): void {
         <button class="button small danger" data-id="${assignment.id}" data-action="delete" aria-label="Delete ${escapeHtml(assignment.title)}">Delete</button>
       </div>
     `;
-
     card.querySelectorAll<HTMLButtonElement>('.assignment-actions button').forEach(button => {
       button.addEventListener('click', (e) => {
         const target = e.target as HTMLButtonElement;
@@ -161,58 +145,42 @@ function renderAssignments(): void {
 }
 
 function escapeHtml(unsafe: string): string {
-    return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 function handleAssignmentAction(id: string, action: 'start' | 'complete' | 'pend' | 'reopen' | 'delete'): void {
   const assignmentIndex = assignments.findIndex(a => a.id === id);
   if (assignmentIndex === -1) return;
-
   switch (action) {
-    case 'start':
-      assignments[assignmentIndex].status = 'In Progress';
-      break;
-    case 'complete':
-      assignments[assignmentIndex].status = 'Completed';
-      break;
-    case 'pend':
-      assignments[assignmentIndex].status = 'Pending';
-      break;
-    case 'reopen':
-       assignments[assignmentIndex].status = 'Pending';
-      break;
-    case 'delete':
-      if (confirm('Are you sure you want to delete this assignment?')) {
-        assignments.splice(assignmentIndex, 1);
-      }
-      break;
+    case 'start': assignments[assignmentIndex].status = 'In Progress'; break;
+    case 'complete': assignments[assignmentIndex].status = 'Completed'; break;
+    case 'pend': assignments[assignmentIndex].status = 'Pending'; break;
+    case 'reopen': assignments[assignmentIndex].status = 'Pending'; break;
+    case 'delete': if (confirm('Are you sure you want to delete this assignment?')) { assignments.splice(assignmentIndex, 1); } break;
   }
   saveAssignments();
   renderAssignments();
 }
 
 function handleAddAssignee(): void {
-    console.log("Add Assignee button clicked!"); 
+    console.log("Add Team Member button clicked!"); // <<< CHANGED TEXT
 
     const newNameInput = DOMElements.newAssigneeNameInput;
     const newName = newNameInput.value.trim();
-    console.log("New name entered:", newName); 
+    console.log("New member name entered:", newName); // <<< CHANGED TEXT
 
     if (!newName) {
-        console.log("Name is empty, showing alert."); 
-        alert('Please enter a name for the new assignee.');
+        console.log("Name is empty, showing alert.");
+        // **** CHANGED TEXT ****
+        alert('Please enter a name for the new team member.'); 
         newNameInput.focus();
         return; 
     }
 
     if (teamMembers.some(member => member.toLowerCase() === newName.toLowerCase())) {
-        console.log("Name already exists, showing alert."); 
-        alert(`"${newName}" is already in the team list.`);
+        console.log("Name already exists, showing alert.");
+        // **** CHANGED TEXT ****
+        alert(`"${newName}" is already in the team list.`); 
         newNameInput.value = ''; 
         newNameInput.focus();
         return; 
@@ -223,7 +191,8 @@ function handleAddAssignee(): void {
     saveTeamMembers();         
     populateAssigneeDropdown(); 
     console.log("Dropdown populated, showing alert."); 
-    alert(`"${newName}" has been added successfully!`);
+    // **** CHANGED TEXT ****
+    alert(`"${newName}" has been added successfully!`); 
     newNameInput.value = ''; 
     newNameInput.focus();    
 }
@@ -234,16 +203,14 @@ function handleFormSubmit(event: SubmitEvent): void {
     DOMElements.form.reportValidity();
     return;
   }
-
   const newAssignment: Assignment = {
-    id: `asg-${Date.now().toString()}-${Math.random().toString(36).substring(2, 7)}`, // Basic unique ID
+    id: `asg-${Date.now().toString()}-${Math.random().toString(36).substring(2, 7)}`,
     title: DOMElements.titleInput.value.trim(),
     assignee: DOMElements.assigneeSelect.value,
     type: DOMElements.typeSelect.value as Assignment['type'],
     dueDate: DOMElements.dueDateInput.value,
     status: 'Pending',
   };
-
   assignments.push(newAssignment);
   saveAssignments();
   renderAssignments();
@@ -257,26 +224,20 @@ function initializeApp(): void {
     console.error('One or more critical DOM elements are missing. App cannot initialize.');
     return;
   }
-
   console.log("Initializing App..."); 
-
   loadTeamMembers(); 
   populateAssigneeDropdown();
   loadAssignments();
   renderAssignments();
-
   DOMElements.form.addEventListener('submit', handleFormSubmit);
   DOMElements.filterStatusSelect.addEventListener('change', renderAssignments);
   DOMElements.sortBySelect.addEventListener('change', renderAssignments);
-
   if (DOMElements.addAssigneeButton) {
       console.log("Add Assignee Button Found! Adding listener."); 
       DOMElements.addAssigneeButton.addEventListener('click', handleAddAssignee); 
   } else {
       console.error("Add Assignee Button NOT FOUND!"); 
   }
-
-  // --- Theme toggle code ---
   const themeToggle = document.createElement('button');
   themeToggle.textContent = 'Toggle Dark Mode';
   themeToggle.className = 'button';
@@ -285,12 +246,10 @@ function initializeApp(): void {
   themeToggle.style.right = '10px';
   themeToggle.setAttribute('aria-label', 'Toggle color theme');
   document.body.appendChild(themeToggle);
-  
   const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
     document.documentElement.setAttribute('data-theme', 'dark');
   }
-
   themeToggle.addEventListener('click', () => {
     if (document.documentElement.getAttribute('data-theme') === 'dark') {
       document.documentElement.removeAttribute('data-theme');
@@ -300,13 +259,9 @@ function initializeApp(): void {
       localStorage.setItem('theme', 'dark');
     }
   });
-  // --- End of theme toggle code ---
-
-  // --- Due date code ---
   const today = new Date().toISOString().split('T')[0];
   DOMElements.dueDateInput.value = today;
   DOMElements.dueDateInput.min = today; 
-  // --- End of due date code ---
 }
 
 // Start the application

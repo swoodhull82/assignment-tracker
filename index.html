@@ -15,21 +15,21 @@
 
     <main>
       <section class="form-section" aria-labelledby="form-section-title">
-        <h2 id="form-section-title">Add New Assignment / Assignee</h2>
+        <h2 id="form-section-title">Add New Assignment / Team Member</h2>
         <form id="new-assignment-form">
           <div class="form-group">
             <label for="assignment-title">Title:</label>
             <input type="text" id="assignment-title" name="title" required aria-required="true">
           </div>
           <div class="form-group">
-            <label for="assignment-assignee">Assignee:</label>
+            <label for="assignment-assignee">Team Member:</label>
             <select id="assignment-assignee" name="assignee" required aria-required="true">
               </select>
           </div>
           <div class="form-group add-assignee-group">
-              <label for="new-assignee-name">Add New Assignee:</label>
+              <label for="new-assignee-name">Add New Team Member:</label>
               <div class="input-with-button">
-                  <input type="text" id="new-assignee-name" placeholder="Enter new name">
+                  <input type="text" id="new-assignee-name" placeholder="Enter new member name">
                   <button type="button" id="add-assignee-button" class="button small secondary">Add</button>
               </div>
           </div>
@@ -69,17 +69,19 @@
               <option value="dueDate">Due Date (Asc)</option>
               <option value="dueDateDesc">Due Date (Desc)</option>
               <option value="title">Title (A-Z)</option>
-              <option value="assignee">Assignee (A-Z)</option>
+              <option value="assignee">Team Member (A-Z)</option> 
             </select>
           </div>
-          </div> <div id="assignment-list" role="list" aria-live="polite">
+        </div> 
+
+        <div id="assignment-list" role="list" aria-live="polite">
           <p class="empty-state">No assignments found. Add one above!</p>
         </div>
       </section>
     </main>
 
     <footer>
-      <p>&copy; 2025 Your Team</p>
+      <p></p> 
     </footer>
   </div>
 
