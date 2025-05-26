@@ -1,0 +1,82 @@
+<!-- Placeholder Calendar.txt -->
+<!-- This is a simplified structure. Replace with actual Calendar.txt content. -->
+
+<div class="flex flex-col h-screen">
+  <!-- Header -->
+  <header class="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <div class="flex items-center">
+      <!-- Placeholder Logo -->
+      <svg class="h-8 w-8 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+      <h1 class="text-xl font-bold">Review Tracker</h1>
+    </div>
+    <nav>
+      <a href="#" class="px-3 py-2 rounded hover:bg-gray-700">Dashboard</a>
+      <a href="#" class="px-3 py-2 rounded hover:bg-gray-700">Documents</a>
+      <a href="/document-review-calendar" class="px-3 py-2 rounded bg-gray-700">Reviews</a> <!-- Active Page Example -->
+      <a href="#" class="px-3 py-2 rounded hover:bg-gray-700">Reports</a>
+    </nav>
+    <div class="flex items-center">
+      <!-- Placeholder Bell Icon -->
+      <svg class="h-6 w-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+      <!-- Placeholder Profile Picture -->
+      <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/150" alt="Profile Picture">
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow p-6 bg-gray-100">
+    <div class="container mx-auto">
+      <div class="bg-white shadow-md rounded-lg p-6">
+        <!-- Calendar Header: Month/Year and Navigation -->
+        <div class="flex justify-between items-center mb-4">
+          <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">&lt; Prev</button>
+          <h2 class="text-2xl font-semibold">Month Year</h2>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next &gt;</button>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-7 gap-1 text-center">
+          <!-- Days of the week -->
+          <div class="font-semibold p-2">Sun</div>
+          <div class="font-semibold p-2">Mon</div>
+          <div class="font-semibold p-2">Tue</div>
+          <div class="font-semibold p-2">Wed</div>
+          <div class="font-semibold p-2">Thu</div>
+          <div class="font-semibold p-2">Fri</div>
+          <div class="font-semibold p-2">Sat</div>
+
+          <!-- Calendar Day Example (empty) -->
+          <div class="border p-2 h-24">1</div>
+          <!-- Calendar Day Example (with event) -->
+          <div class="border p-2 h-24 relative">
+            <span>2</span>
+            <div class="absolute bottom-1 left-1 right-1 p-1 text-xs text-white bg-[#47b4ea] rounded cursor-pointer">
+              Contract Review
+            </div>
+          </div>
+          <!-- ... more day cells ... -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Event Modal (Hidden by default) -->
+  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" id="eventModal">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3 text-center">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Documents for [Selected Date]</h3>
+        <div class="mt-2 px-7 py-3">
+          <ul class="list-disc list-inside text-left">
+            <li>Document Title 1 (Review Type)</li>
+            <li>Document Title 2 (Review Type)</li>
+          </ul>
+        </div>
+        <div class="items-center px-4 py-3">
+          <button id="closeModalButton" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
