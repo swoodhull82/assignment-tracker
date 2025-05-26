@@ -245,29 +245,7 @@ function initializeApp() {
     else {
         console.error("Add Assignee Button NOT FOUND!");
     }
-    const themeToggle = document.createElement('button');
-    themeToggle.textContent = 'Toggle Dark Mode';
-    // Apply Tailwind classes to the theme toggle button
-    themeToggle.className = 'fixed top-2.5 right-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-3 rounded-lg shadow-md text-xs';
-    // themeToggle.style.position = 'fixed'; // Handled by Tailwind 'fixed'
-    themeToggle.style.top = '10px';
-    themeToggle.style.right = '10px';
-    themeToggle.setAttribute('aria-label', 'Toggle color theme');
-    document.body.appendChild(themeToggle);
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && prefersDark)) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-    }
-    themeToggle.addEventListener('click', () => {
-        if (document.documentElement.getAttribute('data-theme') === 'dark') {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'light');
-        }
-        else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-        }
-    });
+    // Dark mode toggle functionality removed.
     const today = new Date().toISOString().split('T')[0];
     DOMElements.dueDateInput.value = today;
     DOMElements.dueDateInput.min = today;

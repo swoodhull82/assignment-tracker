@@ -5,17 +5,13 @@ const Header: React.FC = () => {
   return (
     <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
       <div className="flex items-center">
-        {/* Placeholder Logo */}
-        <svg className="h-8 w-8 mr-2" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-        </svg>
+        {/* Logo Removed */}
         <h1 className="text-xl font-bold">Review Tracker</h1>
       </div>
       <nav>
-        <a href="#" className="px-3 py-2 rounded hover:bg-gray-700">Dashboard</a>
-        <a href="#" className="px-3 py-2 rounded hover:bg-gray-700">Documents</a>
-        {/* Assuming this is the current page, so it's styled as active */}
-        <a href="#" className="px-3 py-2 rounded bg-gray-700">Reviews</a> 
+        <a href="index.html" className="px-3 py-2 rounded hover:bg-gray-700">Dashboard</a>
+        <a href="calendar.html" className="px-3 py-2 rounded hover:bg-gray-700">Calendar</a> {/* Changed from "Reviews" */}
+        <a href="reminders.html" className="px-3 py-2 rounded hover:bg-gray-700">Reminders</a> {/* Changed from "Documents" */}
         <a href="#" className="px-3 py-2 rounded hover:bg-gray-700">Reports</a>
       </nav>
       <div className="flex items-center">
