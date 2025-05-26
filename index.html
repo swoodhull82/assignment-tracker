@@ -6,69 +6,88 @@
   <title>Team Assignment Tracker</title>
   <link rel="stylesheet" href="index.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Team Assignment Tracker</h1>
-      <nav id="main-nav">
-        <ul>
-          <li><a href="#" data-page="dashboard" class="active-nav">Dashboard</a></li>
-          <li><a href="calendar.html">Calendar</a></li>
-          <li><a href="reminders.html">Reminders</a></li>
-          <li><a href="#" data-page="projects">Projects</a></li>
-          <li><a href="#" data-page="documents">Documents</a></li>
-          <li><a href="#" data-page="settings">Settings</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <main>
+<body class="relative flex size-full min-h-screen flex-col bg-gray-100 group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+  <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f3f4] px-10 py-3 bg-white">
+    <div class="flex items-center gap-4 text-[#111518]">
+      <div class="size-4"> <!-- Placeholder for Logo SVG -->
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+        </svg>
+      </div>
+      <h2 class="text-[#111518] text-lg font-bold leading-tight tracking-[-0.015em]">Team Assignment Tracker</h2>
+    </div>
+    <div class="flex flex-1 justify-end gap-8 items-center">
+      <div class="flex items-center gap-9">
+        <a class="text-[#111518] text-sm font-medium leading-normal" href="index.html">Dashboard</a>
+        <a class="text-[#111518] text-sm font-medium leading-normal" href="calendar.html">Calendar</a>
+        <a class="text-[#111518] text-sm font-medium leading-normal" href="reminders.html">Reminders</a>
+        <a class="text-[#111518] text-sm font-medium leading-normal" href="#">Documents</a>
+        <a class="text-[#111518] text-sm font-medium leading-normal" href="#">Reviews</a>
+        <a class="text-[#111518] text-sm font-medium leading-normal" href="#">Reports</a>
+      </div>
+      <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f3f4] text-[#111518] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+        <div class="text-[#111518]" data-icon="Bell" data-size="20px" data-weight="regular">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+            <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
+          </svg>
+        </div>
+      </button>
+      <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDsSNXxARd3p0aZZymOpqCBSg3IpRMDeGyaGsq27Thcq-uutPCWdJKui23tnH1WYK-04e49YIKskahCb5Mx9r0vPVxnxA0M1D2Ra-DJCxb71F4P_xF5uiNCg2bvtoOkfGMRvuon9uDMhEQqeQheCtaXWpOJzo4YILAaYMbiDEeEa9eaXVNcMvdMKEIb8oFl1kifcZ0zvq0FCfq6d61HGQkHWwEtLQqpufvYELHvDci8IAOc8xVL9i8h3ArPwQ5CGsv9HFlQiwdcJiTX");'>
+      </div>
+    </div>
+  </header>
+  <div class="flex flex-1 w-full">
+    <div class="w-full p-4 md:p-6 lg:p-8">
+      <!-- Original <main> content goes here. The page-X divs are for JS SPA routing so keep them -->
       <div id="page-dashboard" class="page-content">
-        <section class="form-section" aria-labelledby="form-section-title">
-          <h2 id="form-section-title">Add New Assignment / Team Member</h2>
-          <form id="new-assignment-form">
-            <div class="form-group">
-              <label for="assignment-title">Title:</label>
-              <input type="text" id="assignment-title" name="title" required aria-required="true">
+        <section class="form-section bg-white p-6 rounded-lg shadow-lg mb-6" aria-labelledby="form-section-title">
+          <h2 id="form-section-title" class="text-xl font-semibold text-gray-700 mb-4">Add New Assignment / Team Member</h2>
+          <form id="new-assignment-form" class="space-y-4">
+            <div> <!-- Replaced form-group -->
+              <label for="assignment-title" class="block text-sm font-medium text-gray-700 mb-1">Title:</label>
+              <input type="text" id="assignment-title" name="title" required aria-required="true" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
             </div>
-            <div class="form-group">
-              <label for="assignment-assignee">Team Member:</label>
-              <select id="assignment-assignee" name="assignee" required aria-required="true">
+            <div> <!-- Replaced form-group -->
+              <label for="assignment-assignee" class="block text-sm font-medium text-gray-700 mb-1">Team Member:</label>
+              <select id="assignment-assignee" name="assignee" required aria-required="true" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
                 </select>
             </div>
-            <div class="form-group add-assignee-group">
-                <label for="new-assignee-name">Add New Team Member:</label>
-                <div class="input-with-button">
-                    <input type="text" id="new-assignee-name" placeholder="Enter new member name">
-                    <button type="button" id="add-assignee-button" class="button small secondary">Add</button>
+            <div class="add-assignee-group"> <!-- Replaced form-group, kept add-assignee-group for JS if needed -->
+                <label for="new-assignee-name" class="block text-sm font-medium text-gray-700 mb-1">Add New Team Member:</label>
+                <div class="input-with-button flex items-center space-x-2">
+                    <input type="text" id="new-assignee-name" placeholder="Enter new member name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                    <button type="button" id="add-assignee-button" class="button small secondary bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-3 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 text-xs">Add</button>
                 </div>
-                <div id="add-assignee-message-area" class="message-area" role="status" aria-live="polite"></div>
+                <div id="add-assignee-message-area" class="message-area mt-2 text-sm text-gray-600" role="status" aria-live="polite"></div>
             </div>
-            <div class="form-group">
-              <label for="assignment-type">Type:</label>
-              <select id="assignment-type" name="type" required aria-required="true">
+            <div> <!-- Replaced form-group -->
+              <label for="assignment-type" class="block text-sm font-medium text-gray-700 mb-1">Type:</label>
+              <select id="assignment-type" name="type" required aria-required="true" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
                 <option value="MDL">MDL</option>
                 <option value="SOP Review">SOP Review</option>
                 <option value="Internal Audit">Internal Audit</option>
                 <option value="DOC">DOC</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="assignment-due-date">Due Date:</label>
-              <input type="date" id="assignment-due-date" name="dueDate" required aria-required="true">
+            <div> <!-- Replaced form-group -->
+              <label for="assignment-due-date" class="block text-sm font-medium text-gray-700 mb-1">Due Date:</label>
+              <input type="date" id="assignment-due-date" name="dueDate" required aria-required="true" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
             </div>
-            <button type="submit" class="button primary">Add Assignment</button>
+            <button type="submit" class="button primary bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Add Assignment</button>
           </form>
         </section>
 
-        <section class="list-section" aria-labelledby="list-section-title">
-          <h2 id="list-section-title">Current Assignments</h2>
-          <div class="controls">
-            <div class="form-group">
-              <label for="filter-status">Filter by Status:</label>
-              <select id="filter-status">
+        <section class="list-section bg-white p-6 rounded-lg shadow-lg mb-6" aria-labelledby="list-section-title">
+          <h2 id="list-section-title" class="text-xl font-semibold text-gray-700 mb-4">Current Assignments</h2>
+          <div class="controls flex flex-wrap gap-4 mb-4 items-center">
+            <div> <!-- Replaced form-group -->
+              <label for="filter-status" class="block text-sm font-medium text-gray-700 mb-1">Filter by Status:</label>
+              <select id="filter-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
                 <option value="all">All</option>
                 <option value="Pending">Pending</option>
                 <option value="In Progress">In Progress</option>
@@ -76,9 +95,9 @@
                 <option value="Overdue">Overdue</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="sort-by">Sort by:</label> 
-              <select id="sort-by"> 
+            <div> <!-- Replaced form-group -->
+              <label for="sort-by" class="block text-sm font-medium text-gray-700 mb-1">Sort by:</label> 
+              <select id="sort-by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"> 
                 <option value="dueDate">Due Date (Asc)</option>
                 <option value="dueDateDesc">Due Date (Desc)</option>
                 <option value="title">Title (A-Z)</option>
@@ -88,18 +107,20 @@
           </div> 
 
           <div id="assignment-list" role="list" aria-live="polite">
-            <p class="empty-state">No assignments found. Add one above!</p>
+            <p class="empty-state text-gray-500 italic">No assignments found. Add one above!</p>
           </div>
         </section>
-        <section class="charts-section" aria-labelledby="charts-section-title">
-          <h2 id="charts-section-title">Dashboard Analytics</h2>
-          <div class="chart-container">
-            <h3>Task Completion by Quarter (Simulated)</h3>
-            <canvas id="taskCompletionChart"></canvas>
-          </div>
-          <div class="chart-container">
-            <h3>Tasks Remaining per Team Member</h3>
-            <canvas id="tasksLeftPerPersonChart"></canvas>
+        <section class="charts-section bg-white p-6 rounded-lg shadow-lg mb-6" aria-labelledby="charts-section-title">
+          <h2 id="charts-section-title" class="text-xl font-semibold text-gray-700 mb-4">Dashboard Analytics</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="chart-container mb-6 p-4 bg-white rounded-lg shadow">
+              <h3 class="text-md font-semibold text-gray-600 mb-2 text-center">Task Completion by Quarter (Simulated)</h3>
+              <canvas id="taskCompletionChart"></canvas>
+            </div>
+            <div class="chart-container mb-6 p-4 bg-white rounded-lg shadow">
+              <h3 class="text-md font-semibold text-gray-600 mb-2 text-center">Tasks Remaining per Team Member</h3>
+              <canvas id="tasksLeftPerPersonChart"></canvas>
+            </div>
           </div>
         </section>
       </div>
@@ -108,13 +129,11 @@
       <div id="page-projects" class="page-content" style="display: none;"><h2>Projects Due Dates</h2><p>Project overview will be here.</p></div>
       <div id="page-documents" class="page-content" style="display: none;"><h2>Document Review Dashboard</h2><p>Document review and assignment will be managed here.</p></div>
       <div id="page-settings" class="page-content" style="display: none;"><h2>Settings</h2><p>Application settings will be here.</p></div>
-    </main>
-
-    <footer>
-      <p></p> 
-    </footer>
+    </div>
   </div>
-
+  <footer>
+    <p></p> 
+  </footer>
   <script type="module" src="index.js"></script>
 </body>
 </html>

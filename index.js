@@ -18,7 +18,7 @@ const DOMElements = {
     listContainer: document.getElementById('assignment-list'),
     filterStatusSelect: document.getElementById('filter-status'),
     sortBySelect: document.getElementById('sort-by'),
-    emptyStateMessage: document.querySelector('#assignment-list .empty-state'),
+    emptyStateMessage: document.querySelector('#assignment-list p.empty-state'), // Ensure specificity if needed
     newAssigneeNameInput: document.getElementById('new-assignee-name'),
     addAssigneeButton: document.getElementById('add-assignee-button'),
 };
@@ -87,31 +87,49 @@ function renderAssignments() {
     });
     if (filteredAssignments.length === 0) {
         const p = document.createElement('p');
-        p.className = 'empty-state';
+        // Updated class for empty state to match HTML, plus some padding
+        p.className = 'empty-state text-gray-500 italic text-center py-10'; 
         p.textContent = 'No assignments match your filters. Try adjusting them or add a new assignment!';
         DOMElements.listContainer.appendChild(p);
         return;
     }
     filteredAssignments.forEach(assignment => {
         const card = document.createElement('div');
-        card.className = 'assignment-card';
+        card.className = 'bg-gray-50 p-4 rounded-lg shadow-md border border-gray-200 mb-4'; // Tailwind classes for card
         card.setAttribute('role', 'listitem');
         card.setAttribute('aria-labelledby', `assignment-title-${assignment.id}`);
+        
         const displayStatus = getDisplayStatus(assignment);
-        const statusClass = displayStatus.toLowerCase().replace(' ', '-');
+        let statusBadgeClasses = 'px-2 py-0.5 inline-block text-xs font-semibold rounded-full ';
+        switch (displayStatus) {
+            case 'Pending': statusBadgeClasses += 'bg-yellow-200 text-yellow-800'; break;
+            case 'In Progress': statusBadgeClasses += 'bg-blue-200 text-blue-800'; break;
+            case 'Completed': statusBadgeClasses += 'bg-green-200 text-green-800'; break;
+            case 'Overdue': statusBadgeClasses += 'bg-red-200 text-red-800'; break;
+            default: statusBadgeClasses += 'bg-gray-200 text-gray-800';
+        }
+
+        // Base Tailwind classes for action buttons
+        const baseButtonClasses = "py-1 px-3 rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2";
+        const startButtonClasses = `${baseButtonClasses} bg-sky-500 hover:bg-sky-600 text-white focus:ring-sky-400`;
+        const completeButtonClasses = `${baseButtonClasses} bg-green-500 hover:bg-green-600 text-white focus:ring-green-400`;
+        const pendReopenButtonClasses = `${baseButtonClasses} bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-400`;
+        const deleteButtonClasses = `${baseButtonClasses} bg-red-500 hover:bg-red-600 text-white focus:ring-red-400 ml-2`;
+
+
         card.innerHTML = `
-      <h3 id="assignment-title-${assignment.id}">${escapeHtml(assignment.title)}</h3>
-      <p><strong>Team Member:</strong> ${escapeHtml(assignment.assignee)}</p>
-      <p><strong>Type:</strong> ${escapeHtml(assignment.type)}</p>
-      <p class="due-date"><strong>Due:</strong> ${escapeHtml(assignment.dueDate)}</p>
-      <p><strong>Status:</strong> <span class="status-badge status-${statusClass}">${escapeHtml(displayStatus)}</span></p>
-      <div class="assignment-actions">
+      <h3 id="assignment-title-${assignment.id}" class="text-lg font-semibold text-gray-800 mb-2">${escapeHtml(assignment.title)}</h3>
+      <p class="text-sm text-gray-600 mb-1"><strong>Team Member:</strong> ${escapeHtml(assignment.assignee)}</p>
+      <p class="text-sm text-gray-600 mb-1"><strong>Type:</strong> ${escapeHtml(assignment.type)}</p>
+      <p class="text-sm text-gray-600 mb-1 font-medium"><strong>Due:</strong> ${escapeHtml(assignment.dueDate)}</p>
+      <p class="text-sm text-gray-600 mb-3"><strong>Status:</strong> <span class="${statusBadgeClasses}">${escapeHtml(displayStatus)}</span></p>
+      <div class="assignment-actions mt-3 pt-3 border-t border-gray-200 text-right">
         ${assignment.status !== 'Completed' ? `
-          ${assignment.status === 'Pending' ? `<button class="button small" data-id="${assignment.id}" data-action="start" aria-label="Mark ${escapeHtml(assignment.title)} as In Progress">Start</button>` : ''}
-          ${assignment.status === 'In Progress' ? `<button class="button small" data-id="${assignment.id}" data-action="complete" aria-label="Mark ${escapeHtml(assignment.title)} as Completed">Complete</button>` : ''}
-          ${assignment.status === 'In Progress' ? `<button class="button small secondary" data-id="${assignment.id}" data-action="pend" aria-label="Mark ${escapeHtml(assignment.title)} as Pending">Set to Pending</button>` : ''}
-        ` : `<button class="button small secondary" data-id="${assignment.id}" data-action="reopen" aria-label="Reopen ${escapeHtml(assignment.title)}">Reopen</button>`}
-        <button class="button small danger" data-id="${assignment.id}" data-action="delete" aria-label="Delete ${escapeHtml(assignment.title)}">Delete</button>
+          ${assignment.status === 'Pending' ? `<button class="${startButtonClasses}" data-id="${assignment.id}" data-action="start" aria-label="Mark ${escapeHtml(assignment.title)} as In Progress">Start</button>` : ''}
+          ${assignment.status === 'In Progress' ? `<button class="${completeButtonClasses}" data-id="${assignment.id}" data-action="complete" aria-label="Mark ${escapeHtml(assignment.title)} as Completed">Complete</button>` : ''}
+          ${assignment.status === 'In Progress' ? `<button class="${pendReopenButtonClasses} ml-2" data-id="${assignment.id}" data-action="pend" aria-label="Mark ${escapeHtml(assignment.title)} as Pending">Set to Pending</button>` : ''}
+        ` : `<button class="${pendReopenButtonClasses}" data-id="${assignment.id}" data-action="reopen" aria-label="Reopen ${escapeHtml(assignment.title)}">Reopen</button>`}
+        <button class="${deleteButtonClasses}" data-id="${assignment.id}" data-action="delete" aria-label="Delete ${escapeHtml(assignment.title)}">Delete</button>
       </div>
     `;
         card.querySelectorAll('.assignment-actions button').forEach(button => {
@@ -229,8 +247,9 @@ function initializeApp() {
     }
     const themeToggle = document.createElement('button');
     themeToggle.textContent = 'Toggle Dark Mode';
-    themeToggle.className = 'button';
-    themeToggle.style.position = 'fixed';
+    // Apply Tailwind classes to the theme toggle button
+    themeToggle.className = 'fixed top-2.5 right-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-3 rounded-lg shadow-md text-xs';
+    // themeToggle.style.position = 'fixed'; // Handled by Tailwind 'fixed'
     themeToggle.style.top = '10px';
     themeToggle.style.right = '10px';
     themeToggle.setAttribute('aria-label', 'Toggle color theme');
