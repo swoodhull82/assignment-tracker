@@ -6,78 +6,108 @@
   <title>Team Assignment Tracker</title>
   <link rel="stylesheet" href="index.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>Team Assignment Tracker</h1>
+      <nav id="main-nav">
+        <ul>
+          <li><a href="#" data-page="dashboard" class="active-nav">Dashboard</a></li>
+          <li><a href="#" data-page="calendar">Calendar</a></li>
+          <li><a href="#" data-page="reminders">Reminders</a></li>
+          <li><a href="#" data-page="projects">Projects</a></li>
+          <li><a href="#" data-page="documents">Documents</a></li>
+          <li><a href="#" data-page="settings">Settings</a></li>
+        </ul>
+      </nav>
     </header>
 
     <main>
-      <section class="form-section" aria-labelledby="form-section-title">
-        <h2 id="form-section-title">Add New Assignment / Team Member</h2>
-        <form id="new-assignment-form">
-          <div class="form-group">
-            <label for="assignment-title">Title:</label>
-            <input type="text" id="assignment-title" name="title" required aria-required="true">
-          </div>
-          <div class="form-group">
-            <label for="assignment-assignee">Team Member:</label>
-            <select id="assignment-assignee" name="assignee" required aria-required="true">
+      <div id="page-dashboard" class="page-content">
+        <section class="form-section" aria-labelledby="form-section-title">
+          <h2 id="form-section-title">Add New Assignment / Team Member</h2>
+          <form id="new-assignment-form">
+            <div class="form-group">
+              <label for="assignment-title">Title:</label>
+              <input type="text" id="assignment-title" name="title" required aria-required="true">
+            </div>
+            <div class="form-group">
+              <label for="assignment-assignee">Team Member:</label>
+              <select id="assignment-assignee" name="assignee" required aria-required="true">
+                </select>
+            </div>
+            <div class="form-group add-assignee-group">
+                <label for="new-assignee-name">Add New Team Member:</label>
+                <div class="input-with-button">
+                    <input type="text" id="new-assignee-name" placeholder="Enter new member name">
+                    <button type="button" id="add-assignee-button" class="button small secondary">Add</button>
+                </div>
+                <div id="add-assignee-message-area" class="message-area" role="status" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
+              <label for="assignment-type">Type:</label>
+              <select id="assignment-type" name="type" required aria-required="true">
+                <option value="MDL">MDL</option>
+                <option value="SOP Review">SOP Review</option>
+                <option value="Internal Audit">Internal Audit</option>
+                <option value="DOC">DOC</option>
               </select>
-          </div>
-          <div class="form-group add-assignee-group">
-              <label for="new-assignee-name">Add New Team Member:</label>
-              <div class="input-with-button">
-                  <input type="text" id="new-assignee-name" placeholder="Enter new member name">
-                  <button type="button" id="add-assignee-button" class="button small secondary">Add</button>
-              </div>
-          </div>
-          <div class="form-group">
-            <label for="assignment-type">Type:</label>
-            <select id="assignment-type" name="type" required aria-required="true">
-              <option value="MDL">MDL</option>
-              <option value="SOP Review">SOP Review</option>
-              <option value="Internal Audit">Internal Audit</option>
-              <option value="DOC">DOC</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="assignment-due-date">Due Date:</label>
-            <input type="date" id="assignment-due-date" name="dueDate" required aria-required="true">
-          </div>
-          <button type="submit" class="button primary">Add Assignment</button>
-        </form>
-      </section>
+            </div>
+            <div class="form-group">
+              <label for="assignment-due-date">Due Date:</label>
+              <input type="date" id="assignment-due-date" name="dueDate" required aria-required="true">
+            </div>
+            <button type="submit" class="button primary">Add Assignment</button>
+          </form>
+        </section>
 
-      <section class="list-section" aria-labelledby="list-section-title">
-        <h2 id="list-section-title">Current Assignments</h2>
-        <div class="controls">
-          <div class="form-group">
-            <label for="filter-status">Filter by Status:</label>
-            <select id="filter-status">
-              <option value="all">All</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Overdue">Overdue</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="sort-by">Sort by:</label> 
-            <select id="sort-by"> 
-              <option value="dueDate">Due Date (Asc)</option>
-              <option value="dueDateDesc">Due Date (Desc)</option>
-              <option value="title">Title (A-Z)</option>
-              <option value="assignee">Team Member (A-Z)</option> 
-            </select>
-          </div>
-        </div> 
+        <section class="list-section" aria-labelledby="list-section-title">
+          <h2 id="list-section-title">Current Assignments</h2>
+          <div class="controls">
+            <div class="form-group">
+              <label for="filter-status">Filter by Status:</label>
+              <select id="filter-status">
+                <option value="all">All</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sort-by">Sort by:</label> 
+              <select id="sort-by"> 
+                <option value="dueDate">Due Date (Asc)</option>
+                <option value="dueDateDesc">Due Date (Desc)</option>
+                <option value="title">Title (A-Z)</option>
+                <option value="assignee">Team Member (A-Z)</option> 
+              </select>
+            </div>
+          </div> 
 
-        <div id="assignment-list" role="list" aria-live="polite">
-          <p class="empty-state">No assignments found. Add one above!</p>
-        </div>
-      </section>
+          <div id="assignment-list" role="list" aria-live="polite">
+            <p class="empty-state">No assignments found. Add one above!</p>
+          </div>
+        </section>
+        <section class="charts-section" aria-labelledby="charts-section-title">
+          <h2 id="charts-section-title">Dashboard Analytics</h2>
+          <div class="chart-container">
+            <h3>Task Completion by Quarter (Simulated)</h3>
+            <canvas id="taskCompletionChart"></canvas>
+          </div>
+          <div class="chart-container">
+            <h3>Tasks Remaining per Team Member</h3>
+            <canvas id="tasksLeftPerPersonChart"></canvas>
+          </div>
+        </section>
+      </div>
+      <div id="page-calendar" class="page-content" style="display: none;"><h2>Calendar</h2><p>Calendar view will be here.</p></div>
+      <div id="page-reminders" class="page-content" style="display: none;"><h2>Reminders</h2><p>Reminders will be managed here.</p></div>
+      <div id="page-projects" class="page-content" style="display: none;"><h2>Projects Due Dates</h2><p>Project overview will be here.</p></div>
+      <div id="page-documents" class="page-content" style="display: none;"><h2>Document Review Dashboard</h2><p>Document review and assignment will be managed here.</p></div>
+      <div id="page-settings" class="page-content" style="display: none;"><h2>Settings</h2><p>Application settings will be here.</p></div>
     </main>
 
     <footer>

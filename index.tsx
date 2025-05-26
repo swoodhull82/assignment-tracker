@@ -35,7 +35,24 @@ const DOMElements = {
   emptyStateMessage: document.querySelector('#assignment-list .empty-state') as HTMLParagraphElement,
   newAssigneeNameInput: document.getElementById('new-assignee-name') as HTMLInputElement,
   addAssigneeButton: document.getElementById('add-assignee-button') as HTMLButtonElement,
+  addAssigneeMessageArea: document.getElementById('add-assignee-message-area') as HTMLDivElement,
+  mainNav: document.getElementById('main-nav') as HTMLElement,
+  pageDashboard: document.getElementById('page-dashboard') as HTMLDivElement,
+  pageCalendar: document.getElementById('page-calendar') as HTMLDivElement,
+  pageReminders: document.getElementById('page-reminders') as HTMLDivElement,
+  pageProjects: document.getElementById('page-projects') as HTMLDivElement,
+  pageDocuments: document.getElementById('page-documents') as HTMLDivElement,
+  pageSettings: document.getElementById('page-settings') as HTMLDivElement,
+  // It's often better to query all page contents and nav links dynamically in the function
+  // but if direct access to specific ones is needed often, they can be listed here.
+  taskCompletionChart: document.getElementById('taskCompletionChart') as HTMLCanvasElement,
+  tasksLeftPerPersonChart: document.getElementById('tasksLeftPerPersonChart') as HTMLCanvasElement,
 };
+
+declare const Chart: any; // Declare Chart.js global
+
+let taskCompletionChartInstance: any = null;
+let tasksLeftPerPersonChartInstance: any = null;
 
 function saveAssignments(): void {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(assignments));
@@ -159,42 +176,67 @@ function handleAssignmentAction(id: string, action: 'start' | 'complete' | 'pend
     case 'delete': if (confirm('Are you sure you want to delete this assignment?')) { assignments.splice(assignmentIndex, 1); } break;
   }
   saveAssignments();
-  renderAssignments();
+  renderAssignments(); // This will also re-render charts
+}
+
+function showAssigneeMessage(message: string, type: 'success' | 'error'): void {
+  if (!DOMElements.addAssigneeMessageArea) return;
+
+  const messageArea = DOMElements.addAssigneeMessageArea;
+  messageArea.textContent = message;
+  messageArea.className = `message-area ${type}`; // Reset classes and add current type
+  messageArea.style.display = 'block'; // Make it visible
+
+  // Clear message after 3 seconds for success, persist for error
+  if (type === 'success') {
+    setTimeout(() => {
+      messageArea.textContent = '';
+      messageArea.style.display = 'none';
+      messageArea.className = 'message-area'; // Reset class
+    }, 3000);
+  }
 }
 
 function handleAddAssignee(): void {
-    console.log("Add Team Member button clicked!"); // <<< CHANGED TEXT
-
     const newNameInput = DOMElements.newAssigneeNameInput;
     const newName = newNameInput.value.trim();
-    console.log("New member name entered:", newName); // <<< CHANGED TEXT
+
+    if (!DOMElements.addAssigneeMessageArea) {
+        console.error("Assignee message area not found!");
+        // Fallback to alert if message area is missing, though ideally it should always be there.
+        if (!newName) {
+            alert('Please enter a name for the new team member.');
+            newNameInput.focus();
+            return;
+        }
+        if (teamMembers.some(member => member.toLowerCase() === newName.toLowerCase())) {
+            alert(`"${newName}" is already in the team list.`);
+            newNameInput.value = '';
+            newNameInput.focus();
+            return;
+        }
+    }
+
 
     if (!newName) {
-        console.log("Name is empty, showing alert.");
-        // **** CHANGED TEXT ****
-        alert('Please enter a name for the new team member.'); 
+        showAssigneeMessage('Please enter a name for the new team member.', 'error');
         newNameInput.focus();
-        return; 
+        return;
     }
 
     if (teamMembers.some(member => member.toLowerCase() === newName.toLowerCase())) {
-        console.log("Name already exists, showing alert.");
-        // **** CHANGED TEXT ****
-        alert(`"${newName}" is already in the team list.`); 
-        newNameInput.value = ''; 
+        showAssigneeMessage(`"${newName}" is already in the team list.`, 'error');
+        newNameInput.value = '';
         newNameInput.focus();
-        return; 
+        return;
     }
 
-    teamMembers.push(newName); 
-    console.log("Updated teamMembers:", teamMembers); 
-    saveTeamMembers();         
-    populateAssigneeDropdown(); 
-    console.log("Dropdown populated, showing alert."); 
-    // **** CHANGED TEXT ****
-    alert(`"${newName}" has been added successfully!`); 
-    newNameInput.value = ''; 
-    newNameInput.focus();    
+    teamMembers.push(newName);
+    saveTeamMembers();
+    populateAssigneeDropdown();
+    showAssigneeMessage(`"${newName}" has been added successfully!`, 'success');
+    newNameInput.value = '';
+    // newNameInput.focus(); // Keep focus on the input for potentially adding more
 }
 
 function handleFormSubmit(event: SubmitEvent): void {
@@ -213,31 +255,232 @@ function handleFormSubmit(event: SubmitEvent): void {
   };
   assignments.push(newAssignment);
   saveAssignments();
-  renderAssignments();
+  renderAssignments(); // This will also re-render charts
   DOMElements.form.reset();
   DOMElements.titleInput.focus();
 }
 
+function renderTaskCompletionChart(): void {
+  if (!DOMElements.taskCompletionChart) return;
+
+  const quarterlyData: { [key: string]: { completed: number, total: number } } = {
+    "Q1": { completed: 0, total: 0 },
+    "Q2": { completed: 0, total: 0 },
+    "Q3": { completed: 0, total: 0 },
+    "Q4": { completed: 0, total: 0 },
+  };
+
+  assignments.forEach(assignment => {
+    const month = new Date(assignment.dueDate).getMonth() + 1; // 1-12
+    let quarter: string;
+    if (month <= 3) quarter = "Q1";
+    else if (month <= 6) quarter = "Q2";
+    else if (month <= 9) quarter = "Q3";
+    else quarter = "Q4";
+
+    quarterlyData[quarter].total++;
+    if (assignment.status === 'Completed') {
+      quarterlyData[quarter].completed++;
+    }
+  });
+
+  const labels = Object.keys(quarterlyData);
+  const completedCounts = labels.map(q => quarterlyData[q].completed);
+  const pendingCounts = labels.map(q => quarterlyData[q].total - quarterlyData[q].completed);
+
+  if (taskCompletionChartInstance) {
+    taskCompletionChartInstance.destroy();
+  }
+
+  taskCompletionChartInstance = new Chart(DOMElements.taskCompletionChart.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Completed Tasks',
+          data: completedCounts,
+          backgroundColor: 'rgba(46, 133, 64, 0.7)', // --success-color with opacity
+          borderColor: 'rgba(46, 133, 64, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Pending/Overdue Tasks',
+          data: pendingCounts,
+          backgroundColor: 'rgba(217, 48, 37, 0.7)', // --danger-color with opacity
+          borderColor: 'rgba(217, 48, 37, 1)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          stacked: true,
+        },
+        x: {
+          stacked: true,
+        }
+      },
+      plugins: {
+        title: {
+            display: false, // Already have a title in HTML
+            text: 'Task Completion by Quarter (Simulated)'
+        }
+      }
+    }
+  });
+}
+
+function renderTasksLeftPerPersonChart(): void {
+  if (!DOMElements.tasksLeftPerPersonChart || !teamMembers.length) return;
+
+  const tasksLeft: { [key: string]: number } = {};
+  teamMembers.forEach(member => tasksLeft[member] = 0);
+
+  assignments.forEach(assignment => {
+    if (assignment.status !== 'Completed') {
+      if (tasksLeft.hasOwnProperty(assignment.assignee)) {
+        tasksLeft[assignment.assignee]++;
+      }
+      // Optional: handle assignments for members no longer in teamMembers list
+    }
+  });
+
+  const labels = teamMembers; // Or Object.keys(tasksLeft) if you want to include past members with tasks
+  const data = labels.map(member => tasksLeft[member]);
+
+  if (tasksLeftPerPersonChartInstance) {
+    tasksLeftPerPersonChartInstance.destroy();
+  }
+
+  tasksLeftPerPersonChartInstance = new Chart(DOMElements.tasksLeftPerPersonChart.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Non-Completed Tasks',
+        data: data,
+        backgroundColor: 'rgba(0, 78, 137, 0.7)', // --secondary-color with opacity
+        borderColor: 'rgba(0, 78, 137, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1 // Ensure y-axis shows whole numbers for task counts
+          }
+        }
+      },
+      plugins: {
+        title: {
+            display: false, // Already have a title in HTML
+            text: 'Tasks Remaining per Team Member'
+        }
+      }
+    }
+  });
+}
+
+
+function handleNavigation(event: Event): void {
+  event.preventDefault();
+  const targetLink = event.currentTarget as HTMLAnchorElement;
+  const pageIdToShow = targetLink.dataset.page;
+
+  if (!pageIdToShow) return;
+
+  // Hide all page content
+  document.querySelectorAll<HTMLDivElement>('.page-content').forEach(page => {
+    page.style.display = 'none';
+  });
+
+  // Show the target page content
+  const targetPage = document.getElementById(`page-${pageIdToShow}`);
+  if (targetPage) {
+    // Special handling for dashboard layout
+    if (pageIdToShow === 'dashboard') {
+        targetPage.style.display = 'grid'; // Re-apply grid display for dashboard
+    } else {
+        targetPage.style.display = 'block';
+    }
+  } else {
+    console.warn(`Page content for 'page-${pageIdToShow}' not found.`);
+  }
+
+  // Update active navigation link
+  if (DOMElements.mainNav) {
+    DOMElements.mainNav.querySelectorAll('a').forEach(link => {
+      link.classList.remove('active-nav');
+    });
+    targetLink.classList.add('active-nav');
+  }
+}
+
+
 function initializeApp(): void {
-  if (!DOMElements.form || !DOMElements.listContainer || !DOMElements.filterStatusSelect || 
-      !DOMElements.sortBySelect || !DOMElements.newAssigneeNameInput || !DOMElements.addAssigneeButton) { 
+  // Check for core elements required for dashboard functionality first
+  if (!DOMElements.form || !DOMElements.listContainer || !DOMElements.filterStatusSelect ||
+      !DOMElements.sortBySelect || !DOMElements.newAssigneeNameInput || !DOMElements.addAssigneeButton ||
+      !DOMElements.addAssigneeMessageArea || !DOMElements.mainNav || !DOMElements.pageDashboard ||
+      !DOMElements.taskCompletionChart || !DOMElements.tasksLeftPerPersonChart ) { // Added chart canvas checks
     console.error('One or more critical DOM elements are missing. App cannot initialize.');
     return;
   }
-  console.log("Initializing App..."); 
-  loadTeamMembers(); 
+
+  console.log("Initializing App...");
+  loadTeamMembers();
   populateAssigneeDropdown();
   loadAssignments();
-  renderAssignments();
+  renderAssignments(); // This renders the dashboard content AND CHARTS
+
+  // Setup event listeners for dashboard specific elements
   DOMElements.form.addEventListener('submit', handleFormSubmit);
-  DOMElements.filterStatusSelect.addEventListener('change', renderAssignments);
-  DOMElements.sortBySelect.addEventListener('change', renderAssignments);
+  // Render assignments (and thus charts) also on filter/sort changes
+  DOMElements.filterStatusSelect.addEventListener('change', () => {
+    renderAssignments();
+    renderTaskCompletionChart(); // Explicitly call chart updates if renderAssignments doesn't already
+    renderTasksLeftPerPersonChart();
+  });
+  DOMElements.sortBySelect.addEventListener('change', () => {
+    renderAssignments();
+    renderTaskCompletionChart();
+    renderTasksLeftPerPersonChart();
+  });
+
   if (DOMElements.addAssigneeButton) {
-      console.log("Add Assignee Button Found! Adding listener."); 
-      DOMElements.addAssigneeButton.addEventListener('click', handleAddAssignee); 
+      DOMElements.addAssigneeButton.addEventListener('click', handleAddAssignee);
   } else {
-      console.error("Add Assignee Button NOT FOUND!"); 
+      console.error("Add Assignee Button NOT FOUND!");
   }
+
+  // Setup navigation
+  const navLinks = DOMElements.mainNav.querySelectorAll('a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', handleNavigation);
+  });
+
+  // Set Dashboard as active by default
+  const defaultActiveLink = DOMElements.mainNav.querySelector('a[data-page="dashboard"]');
+  if (defaultActiveLink) {
+    defaultActiveLink.classList.add('active-nav');
+  }
+  // Ensure only dashboard is visible initially (other pages are display:none via CSS or inline style)
+  // The dashboard is visible by default due to not having `style="display: none;"`
+  // and its grid layout is applied via CSS.
+
+  // Initial chart rendering
+  renderTaskCompletionChart();
+  renderTasksLeftPerPersonChart();
+
   const themeToggle = document.createElement('button');
   themeToggle.textContent = 'Toggle Dark Mode';
   themeToggle.className = 'button';
@@ -266,3 +509,13 @@ function initializeApp(): void {
 
 // Start the application
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+// Modify renderAssignments to call chart rendering functions
+const originalRenderAssignments = renderAssignments;
+renderAssignments = () => {
+  originalRenderAssignments(); // Call the original function
+  if (document.getElementById('page-dashboard')?.style.display !== 'none') {
+    renderTaskCompletionChart();
+    renderTasksLeftPerPersonChart();
+  }
+};
