@@ -1,30 +1,38 @@
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --success-color: #28a745;
-  --danger-color: #dc3545;
-  --warning-color: #ffc107;
-  --info-color: #17a2b8;
-  --light-color: #f8f9fa;
-  --dark-color: #343a40;
-  --background-color: #fff;
-  --text-color: #212529;
-  --card-background: #fff;
-  --border-color: #dee2e6;
-  --border-radius: 0.25rem;
-  --box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --primary-color: #005A3A; /* Deep Green */
+  --secondary-color: #004E89; /* Moderate Blue */
+  --accent-color: #FDBB30; /* Muted Gold/Yellow */
+  --success-color: #2E8540; /* Brighter Green */
+  --danger-color: #D93025; /* Clear Red */
+  --info-color: #0077C0; /* Lighter Blue/Teal */
+  --warning-color: #FDBB30; /* Muted Gold/Yellow */
+  --light-color: #f8f9fa; /* Keeping light color for backgrounds/elements */
+  --dark-color: #343a40; /* Keeping dark color for text/elements */
+  --background-color: #FFFFFF; /* White background */
+  --text-color: #212529; /* Dark text for contrast */
+  --card-background: #FFFFFF; /* White card background */
+  --border-color: #CCCCCC; /* Lighter border color */
+  --border-radius: 0.3rem; /* Slightly increased border radius */
+  --box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Slightly adjusted box shadow */
 }
 
 [data-theme="dark"] {
-  --background-color: #1a1a1a;
-  --text-color: #f8f9fa;
-  --card-background: #2a2a2a;
-  --border-color: #444;
-  --light-color: #343a40;
+  --background-color: #121212; /* Darker background for dark mode */
+  --text-color: #E0E0E0; /* Lighter text for dark mode */
+  --card-background: #1E1E1E; /* Darker card background for dark mode */
+  --border-color: #555555; /* Dark mode border color */
+  --light-color: #2a2a2a; /* Adjusted light color for dark mode elements */
+  --primary-color: #00794F; /* Slightly adjusted primary for dark mode if needed */
+  --secondary-color: #0066A3; /* Slightly adjusted secondary for dark mode */
+  --accent-color: #FDBB30;
+  --success-color: #38A350;
+  --danger-color: #E53935;
+  --info-color: #0088D1;
+  --warning-color: #FDBB30;
 }
 
 body {
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   margin: 0;
   padding: 20px;
   background-color: var(--background-color);
@@ -34,10 +42,10 @@ body {
 }
 
 .container {
-  max-width: 960px;
+  max-width: 1000px; /* Slightly wider container */
   margin: 0 auto;
   background-color: var(--card-background);
-  padding: 20px;
+  padding: 25px; /* Increased padding */
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   border: 1px solid var(--border-color);
@@ -45,92 +53,125 @@ body {
 
 header, footer {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px; /* Increased margin */
+  padding: 15px 0; /* Added padding */
   color: var(--secondary-color);
 }
 
-h1, h2 {
+header h1 { /* Target only h1 in header for specific styling */
+  font-size: 2.8em; /* Increased font size for main title */
   color: var(--primary-color);
+  margin-bottom: 10px; /* Added margin below title */
+}
+
+h2 {
+  font-size: 1.8em; /* Increased font size for section titles */
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--accent-color); /* Accent border for titles */
+  padding-bottom: 10px; /* Padding below title text */
+  margin-top: 30px; /* More space above section titles */
+  margin-bottom: 20px;
 }
 
 main {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 30px;
+  gap: 40px; /* Increased gap */
 }
 
 .form-section, .list-section {
-  padding: 20px;
-  background-color: var(--background-color);
+  padding: 25px; /* Increased padding */
+  background-color: var(--background-color); /* Ensure this uses background, not card-background unless intended */
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Softer shadow for sections */
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* Increased margin */
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px; /* Increased margin */
   font-weight: bold;
+  color: var(--secondary-color); /* Label color for distinction */
 }
 
 input[type="text"],
 input[type="date"],
 select {
   width: 100%;
-  padding: 8px 10px;
+  padding: 12px 15px; /* Increased padding */
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  box-sizing: border-box; /* Important */
+  box-sizing: border-box;
   background-color: var(--background-color);
   color: var(--text-color);
+  font-size: 1em; /* Ensure readable font size */
 }
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus {
+  border-color: var(--primary-color); /* Highlight focus with primary color */
+  box-shadow: 0 0 0 0.2rem rgba(0, 90, 58, 0.25); /* Focus shadow */
+}
+
 
 .button, button {
   display: inline-block;
-  padding: 8px 15px;
+  padding: 10px 18px; /* Increased padding */
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   text-decoration: none;
-  font-size: 0.9em;
-  margin-right: 5px;
-  margin-top: 5px;
-  transition: opacity 0.2s;
+  font-size: 1em; /* Increased font size */
+  margin-right: 8px; /* Adjusted margin */
+  margin-top: 8px; /* Adjusted margin */
+  transition: background-color 0.2s, opacity 0.2s; /* Smoother transition */
+  font-weight: bold; /* Bolder button text */
 }
 
 .button:hover, button:hover {
-  opacity: 0.85;
+  opacity: 0.9; /* Slightly different hover effect */
 }
 
 .button.primary, button[type="submit"] {
   background-color: var(--primary-color);
   color: white;
 }
+.button.primary:hover {
+  background-color: #00422B; /* Darker shade on hover */
+}
 
 .button.secondary {
   background-color: var(--secondary-color);
   color: white;
+}
+.button.secondary:hover {
+  background-color: #003A6B; /* Darker shade on hover */
 }
 
 .button.danger {
   background-color: var(--danger-color);
   color: white;
 }
+.button.danger:hover {
+  background-color: #B0271E; /* Darker shade on hover */
+}
 
 .button.small {
-    padding: 5px 10px;
-    font-size: 0.8em;
+    padding: 6px 12px; /* Adjusted padding */
+    font-size: 0.85em; /* Adjusted font size */
 }
 
 .controls {
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 25px; /* Increased gap */
+  margin-bottom: 25px; /* Increased margin */
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 20px;
+  padding-bottom: 25px; /* Increased padding */
 }
 
 .controls .form-group {
@@ -142,72 +183,229 @@ select {
   background-color: var(--card-background);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: 20px; /* Increased padding */
+  margin-bottom: 20px; /* Increased margin */
   box-shadow: var(--box-shadow);
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s ease-in-out; /* Smoother transition */
 }
  .assignment-card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.18); /* Enhanced hover shadow */
  }
 
 .assignment-card h3 {
   margin-top: 0;
-  color: var(--text-color);
+  color: var(--primary-color); /* Card titles with primary color */
+  margin-bottom: 10px; /* Space below card title */
 }
 
 .assignment-card p {
-    margin: 5px 0;
+    margin: 8px 0; /* Increased paragraph margin */
+    line-height: 1.7; /* Improved line height for readability */
 }
 
 .due-date {
     font-weight: bold;
+    color: var(--secondary-color); /* Due date color */
 }
 
 .status-badge {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
+    padding: 5px 10px; /* Increased padding */
+    border-radius: 15px; /* More rounded badge */
+    font-size: 0.85em; /* Adjusted font size */
     color: white;
     text-transform: capitalize;
+    font-weight: bold; /* Bolder badge text */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Subtle shadow for badge */
 }
 
+/* Ensuring good contrast for warning text if background is light */
 .status-pending { background-color: var(--info-color); }
-.status-in-progress { background-color: var(--warning-color); color: #333; }
+.status-in-progress { background-color: var(--warning-color); color: #212529; } /* Dark text for yellow */
 .status-completed { background-color: var(--success-color); }
 .status-overdue { background-color: var(--danger-color); }
 
 .assignment-actions {
-    margin-top: 15px;
+    margin-top: 20px; /* Increased margin */
     border-top: 1px dashed var(--border-color);
-    padding-top: 10px;
+    padding-top: 15px; /* Increased padding */
     text-align: right;
 }
 
 .empty-state {
     text-align: center;
-    padding: 40px 20px;
+    padding: 50px 30px; /* Increased padding */
     color: var(--secondary-color);
     background-color: var(--light-color);
-    border: 2px dashed var(--border-color);
+    border: 2px dashed var(--border-color); /* Make border more prominent */
     border-radius: var(--border-radius);
 }
 
 /* Styling for the new "Add Assignee" section */
+.add-assignee-group {
+  margin-bottom: 20px; /* Add some space below this group */
+}
 .add-assignee-group .input-with-button {
-  display: flex; /* Allows input and button to sit side-by-side */
-  gap: 10px;     /* Adds a small space between them */
+  display: flex;
+  gap: 10px;
 }
 
 .add-assignee-group .input-with-button input {
-  flex-grow: 1; /* Makes the input field stretch to fill available space */
+  flex-grow: 1;
 }
 
 .add-assignee-group .input-with-button button {
-  flex-shrink: 0;   /* Prevents the button from shrinking if space is tight */
-  margin-top: 0;    /* Removes any default top margin */
-  height: 35px;     /* Tries to match a common input height, adjust as needed */
-  align-self: flex-end; /* Aligns button to the bottom if input/button have different heights */
-  padding-top: 8px; /* Adjust padding if text isn't centered vertically */
-  padding-bottom: 8px;
+  flex-shrink: 0;
+  margin-top: 0;
+  /* height is auto based on padding and font size */
+  align-self: stretch; /* Make button same height as input */
+}
+
+/* Message area styling */
+.message-area {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: var(--border-radius);
+  font-size: 0.9em;
+  text-align: center;
+  display: none; /* Hidden by default */
+  transition: opacity 0.3s ease-in-out;
+}
+
+.message-area.success {
+  background-color: var(--success-color);
+  color: white;
+  display: block; /* Make visible */
+}
+
+/* Navigation Styles */
+#main-nav {
+  background-color: var(--light-color);
+  padding: 10px 0;
+  margin-bottom: 25px; /* Space between nav and main content */
+  border-radius: var(--border-radius);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+#main-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Center navigation items */
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+}
+
+#main-nav li {
+  margin: 5px 10px; /* Spacing around each nav item */
+}
+
+#main-nav a {
+  text-decoration: none;
+  color: var(--secondary-color);
+  padding: 8px 15px;
+  border-radius: var(--border-radius);
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+#main-nav a:hover,
+#main-nav a:focus {
+  background-color: var(--border-color);
+  color: var(--primary-color);
+}
+
+#main-nav a.active-nav {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] #main-nav {
+  background-color: var(--dark-color); /* Darker nav background */
+}
+
+[data-theme="dark"] #main-nav a {
+  color: var(--light-color); /* Lighter text for dark mode nav links */
+}
+
+[data-theme="dark"] #main-nav a:hover,
+[data-theme="dark"] #main-nav a:focus {
+  background-color: var(--border-color); /* Use dark theme's border color for hover */
+  color: var(--accent-color); /* Accent color for hover text in dark mode */
+}
+
+[data-theme="dark"] #main-nav a.active-nav {
+  background-color: var(--primary-color); /* Keep primary for active, or adjust if needed */
+  color: var(--text-color); /* Ensure contrast for active link text in dark mode */
+}
+
+
+/* Page Content Styling */
+.page-content {
+  padding-top: 20px; /* Add some padding to the top of page content sections */
+  /* Initially hidden, will be shown by JS */
+}
+
+/* Ensure dashboard layout is preserved if it was using grid directly on main */
+#page-dashboard {
+    display: grid; /* Re-apply grid if it was on main */
+    /* Updated to handle a third column for charts, or charts stacking below */
+    grid-template-columns: 1fr 2fr; /* Default, will be overridden for wider screens if needed */
+    gap: 40px;
+}
+
+/* Adjust dashboard layout for charts. 
+   This makes the charts section span both columns of the main content area.
+   The form and list will be in the first two columns of the implicit grid row,
+   and charts will be in a new "row" spanning all columns.
+*/
+#page-dashboard .form-section {
+    grid-column: 1 / 2; /* Takes the first column */
+}
+#page-dashboard .list-section {
+    grid-column: 2 / 3; /* Takes the second column */
+}
+#page-dashboard .charts-section {
+    grid-column: 1 / -1; /* Spans all columns */
+    display: grid; /* Sub-grid for charts */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive chart layout */
+    gap: 20px; /* Gap between charts */
+    margin-top: 20px; /* Space above the charts section */
+}
+
+
+/* For other pages that are simple placeholders for now */
+.page-content h2 {
+    margin-top: 0; /* Remove extra top margin if page content already has padding */
+}
+
+.message-area.error {
+  background-color: var(--danger-color);
+  color: white;
+  display: block; /* Make visible */
+}
+
+/* Chart Container Styling */
+.chart-container {
+  width: 100%; /* Take full width of its grid cell */
+  max-width: 500px; /* Max width for readability, adjust as needed */
+  margin: 15px auto; /* Centering if grid cell is wider */
+  padding: 20px;
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.chart-container h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 1.2em; /* Adjusted font size for chart titles */
+}
+
+/* Ensure canvas is responsive within its container */
+.chart-container canvas {
+    max-width: 100%;
+    height: auto !important; /* Override Chart.js inline style if needed */
 }
