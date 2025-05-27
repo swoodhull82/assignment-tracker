@@ -245,7 +245,7 @@ function initializeApp() {
     else {
         console.error("Add Assignee Button NOT FOUND!");
     }
-    // Dark mode toggle functionality removed.
+
     const today = new Date().toISOString().split('T')[0];
     DOMElements.dueDateInput.value = today;
     DOMElements.dueDateInput.min = today;

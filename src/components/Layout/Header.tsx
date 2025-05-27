@@ -5,13 +5,7 @@ const Header: React.FC = () => {
   return (
     <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
       <div className="flex items-center">
-        {/* Logo Removed as per previous user request */}
-        <h1 className="text-xl font-bold">Review Tracker</h1>
-      </div>
-      <nav>
-        <a href="index.html" className="px-3 py-2 rounded hover:bg-gray-700">Dashboard</a>
-        <a href="calendar.html" className="px-3 py-2 rounded hover:bg-gray-700">Calendar</a>
-        <a href="reminders.html" className="px-3 py-2 rounded hover:bg-gray-700">Reminders</a>
+
         <a href="#" className="px-3 py-2 rounded hover:bg-gray-700">Reports</a>
       </nav>
       <div className="flex items-center">
