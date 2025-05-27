@@ -1,3 +1,5 @@
+**Note:** The `package.json` file has been updated with `test` and `test:backend` scripts. However, you will need to ensure all frontend `devDependencies` listed below are installed by running `npm install --save-dev <package-name>` for each, or by adding them to your `package.json` and running `npm install`.
+
 # Frontend Testing Setup Notes (Jest & React Testing Library)
 
 This document outlines the typical dependencies and setup steps required to run the provided React component tests, assuming a Create React App-like environment or a manual setup.
@@ -139,18 +141,25 @@ global.matchMedia = global.matchMedia || function() {
 
 ## 5. Running Tests
 
-Add a script to your `package.json`:
+The necessary scripts have been added to your `package.json`.
 
-```json
-{
-  "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch"
-  }
-}
+### Frontend Tests
+
+To run the frontend (Jest/React Testing Library) tests:
+```bash
+npm test
+```
+To run them in watch mode (if Jest is configured for this, which is common):
+```bash
+npm test -- --watch
 ```
 
-Then run tests using `npm test` or `yarn test`.
+### Backend Tests
+
+To run the backend (Python unittest) tests:
+```bash
+npm run test:backend
+```
+This command executes `python -m unittest discover backend`. Ensure your Python environment is set up and any backend dependencies are installed (though for the current backend tests, only Python standard library and Flask/SQLAlchemy from `requirements.txt` or similar would be needed, which is outside this file's scope to detail).
 
 This setup provides a basic environment for testing React components with Jest and React Testing Library. Adjust paths and configurations according to your specific project structure.
-```
